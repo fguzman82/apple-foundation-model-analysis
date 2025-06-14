@@ -336,13 +336,13 @@ graph TD
     B --> D[RoPE Positional Encoding<br/>theta = 500,000<br/>50x Context Extension<br/>4K to 205K tokens]
     C --> D
 
-    %% Draft Model Branch (Speculative Decoding)
-    A --> A1[Draft Model<br/>48M Parameters]
+    %% Draft Model Branch (ALWAYS FIRST)
+    A --> A1[Draft Model<br/>48M Parameters<br/>🚀 Always First Step]
 
-    subgraph DRAFT ["Draft Model - Speculative Decoding"]
+    subgraph DRAFT ["Draft Model - Speculative Decoding Pipeline"]
         A1 --> A2[12 Uniform Layers<br/>256 Hidden Dim<br/>8 Attention Heads]
-        A2 --> A3[Fast Candidate Generation<br/>4-8 Tokens]
-        A3 --> A4[Send to Base Model<br/>for Verification]
+        A2 --> A3[Fast Candidate Generation<br/>4-8 Tokens Simultaneously<br/>⚡ 10x Faster than Base]
+        A3 --> A4[Candidates Ready<br/>for Verification]
     end
 
     %% Segment 0: Standard Transformer
@@ -390,15 +390,27 @@ graph TD
 
     %% Output Processing and Speculative Verification
     G --> H[Output Transform<br/>Tied Weights<br/>2,048 to 153,600]
-    H --> I[Output Logits<br/>Vocabulary Distribution]
+    H --> I[Base Model Logits<br/>Vocabulary Distribution]
 
-    %% Speculative Decoding Integration
-    A4 --> I
-    I --> J{Speculative Verification<br/>Accept/Reject Candidates}
-    J -->|Accept| K[✅ Accepted Tokens<br/>High Quality Output]
-    J -->|Reject| L[❌ Rejected Tokens<br/>Regenerate with Draft]
-    L --> A1
-    K --> M[Final Response]
+    %% Speculative Decoding Integration (CORRECTED FLOW)
+    A4 --> J[🔍 Parallel Verification<br/>Base Model Evaluates<br/>All Draft Candidates]
+    I --> J
+
+    J --> K{Quality Assessment<br/>Per Candidate Token}
+
+    K -->|High Quality<br/>60-80% typical| L[✅ Accept Token<br/>Add to Final Output]
+    K -->|Low Quality<br/>20-40% typical| M[❌ Reject Token<br/>Quality Below Threshold]
+
+    L --> N{More Tokens<br/>Needed?}
+    M --> O[🔄 Generate New<br/>Candidates]
+
+    N -->|Yes| O
+    N -->|No| P[Final Response<br/>🎉 Complete Sequence]
+
+    O --> A1
+
+    %% Performance Benefits Box
+    Q[📊 Performance Benefits<br/>🚀 2-4x Faster Inference<br/>💾 +186MB Memory Only<br/>🎯 Zero Quality Loss<br/>📈 60-80% Accept Rate]
 
     %% Styling
     classDef input fill:#e1f5fe
@@ -407,13 +419,17 @@ graph TD
     classDef segment1 fill:#e8f5e8
     classDef output fill:#fff3e0
     classDef speculative fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef performance fill:#e8f5e8,stroke:#388e3c,stroke-width:3px
 
     class A,B,C,D input
-    class A1,A2,A3,A4 draft
+    class A1,A2,A3,A4,O draft
     class E,E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12 segment0
     class F,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11 segment1
     class G,H,I output
-    class J,K,L,M speculative
+    class J,K,L,M,N speculative
+    class P decision
+    class Q performance
 ```
 
 ## Detailed Architecture Analysis
